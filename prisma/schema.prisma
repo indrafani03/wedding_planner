@@ -1,0 +1,208 @@
+// Wedding Planner - Prisma schema
+// Modelled after the "wedding cashflow.xlsx" workbook (9 sheets).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// ---------- Enums ----------
+
+enum CashflowType {
+  INCOME
+  EXPENSE
+}
+
+/// CPP = Calon Pengantin Pria, CPW = Calon Pengantin Wanita
+enum Party {
+  CPP
+  CPW
+}
+
+enum BudgetScope {
+  ENGAGEMENT // sheet "BUDGET LAMARAN"
+  WEDDING // sheet "WEDDING BUDGET"
+  AFTER_MARRIED // sheet "AFTER MARRIED"
+}
+
+enum VendorStatus {
+  NOT_NEEDED // "-"
+  CHOOSE_VENDOR
+  DOWN_PAYMENT
+  FULL_PAYMENT
+}
+
+enum TodoStatus {
+  NOT_YET
+  ON_PROGRESS
+  DONE
+}
+
+enum Progress {
+  BELUM
+  SUDAH
+}
+
+enum InvitationType {
+  FISIK
+  DIGITAL
+}
+
+enum Attendance {
+  BELUM_KONFIRMASI
+  HADIR
+  TIDAK_HADIR
+}
+
+/// ---------- Models ----------
+
+/// Singleton row holding the couple's core settings.
+model WeddingProfile {
+  id             String    @id @default("default")
+  groomName      String    @default("CPP")
+  brideName      String    @default("CPW")
+  weddingDate    DateTime?
+  engagementDate DateTime?
+  /// Target tabungan / budget pernikahan (rupiah)
+  savingTarget   Int       @default(0)
+  venue          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+/// Sheet: WEDDING CASH FLOW
+model CashflowEntry {
+  id          String       @id @default(cuid())
+  date        DateTime
+  description String
+  type        CashflowType
+  party       Party
+  amount      Int
+  note        String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([date])
+  @@index([type])
+}
+
+/// Sheets: BUDGET LAMARAN / WEDDING BUDGET / AFTER MARRIED
+model BudgetItem {
+  id        String       @id @default(cuid())
+  scope     BudgetScope
+  category  String
+  detail    String
+  status    VendorStatus @default(CHOOSE_VENDOR)
+  vendor    String?
+  totalCost Int          @default(0)
+  note      String?
+  term1     Int          @default(0)
+  term2     Int          @default(0)
+  term3     Int          @default(0)
+  term4     Int          @default(0)
+  sortOrder Int          @default(0)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([scope, sortOrder])
+}
+
+/// Sheet: BUDGET ADMINITRASI
+model AdminBudgetItem {
+  id              String     @id @default(cuid())
+  category        String
+  name            String
+  handledBy       String?
+  qty             Int        @default(1)
+  estimationPrice Int        @default(0)
+  realPrice       Int        @default(0)
+  status          TodoStatus @default(NOT_YET)
+  note            String?
+  sortOrder       Int        @default(0)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@index([sortOrder])
+}
+
+/// Sheet: LIST SESERAHAN
+model SeserahanItem {
+  id          String   @id @default(cuid())
+  category    String
+  detail      String
+  brand       String?
+  qty         Int      @default(1)
+  link        String?
+  budget      Int      @default(0)
+  actualPrice Int      @default(0)
+  checked     Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category, sortOrder])
+}
+
+/// Sheet: ADMINISTRASI DAN DOKUMEN
+model DocumentItem {
+  id        String   @id @default(cuid())
+  groupCode String
+  groupName String
+  name      String
+  progress  Progress @default(BELUM)
+  details   String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+}
+
+/// Sheet: DAFTAR TAMU
+model Guest {
+  id             String         @id @default(cuid())
+  name           String
+  origin         String?
+  side           Party
+  invitationType InvitationType @default(FISIK)
+  attendance     Attendance     @default(BELUM_KONFIRMASI)
+  /// Undangan sudah dikirim?
+  invited        Boolean        @default(false)
+  pax            Int            @default(1)
+  phone          String?
+  note           String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([side])
+  @@index([attendance])
+}
+
+/// Sheet: VENDOR CHECKLIST
+model ChecklistTask {
+  id         String    @id @default(cuid())
+  section    String
+  subSection String?
+  name       String
+  deadline   DateTime?
+  done       Boolean   @default(false)
+  note       String?
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([section, sortOrder])
+}
+
+/// Singleton row tracking failed PIN attempts. The PIN itself lives in the
+/// APP_PIN environment variable, so nothing secret is stored here.
+model PinAttempt {
+  id             String    @id @default("default")
+  failedAttempts Int       @default(0)
+  lockedUntil    DateTime?
+  updatedAt      DateTime  @updatedAt
+}
