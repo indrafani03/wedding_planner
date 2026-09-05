@@ -1,0 +1,8 @@
+buatkan saya applikasi wedding planner
+
+database pakai ini postgresql://neondb_owner:npg_m3InG4klSCce@ep-billowing-art-b37pl11c-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+pakai nextjs versi terbaru
+pakai prisma versi terbaru 
+pakai shacdn versi terbaru
+ini di buat khusus user mobile dan pastikan force kedalam bentuk mobile uinya
+untuk fitur buat seperti ini wedding cashflow.xlsx
