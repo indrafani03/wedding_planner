@@ -103,7 +103,7 @@ export default async function DashboardPage() {
           <Link
             href="/pengaturan"
             aria-label="Pengaturan"
-            className="hover:bg-accent flex size-8 items-center justify-center rounded-full"
+            className="hover:bg-accent -mr-2 flex size-11 items-center justify-center rounded-full"
           >
             <Settings className="size-4.5" />
           </Link>

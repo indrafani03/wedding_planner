@@ -54,12 +54,12 @@ export function AdminBudgetItemSheet({
       successMessage={editing ? "Item diperbarui" : "Item ditambahkan"}
       trigger={
         editing ? (
-          <Button variant="ghost" size="sm" className="h-8 gap-1.5 px-2">
+          <Button variant="ghost" className="h-11 gap-1.5 px-3">
             <Pencil className="size-3.5" />
             Ubah
           </Button>
         ) : (
-          <Button size="sm" className="gap-1.5">
+          <Button className="h-11 gap-1.5 px-3">
             <Plus className="size-4" />
             Tambah
           </Button>

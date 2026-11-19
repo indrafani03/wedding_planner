@@ -62,7 +62,7 @@ export function FormSheet({
         >
           {children}
           <SheetFooter className="px-0">
-            <Button type="submit" disabled={pending} className="w-full">
+            <Button type="submit" disabled={pending} className="h-11 w-full">
               {pending ? "Menyimpan..." : submitLabel}
             </Button>
           </SheetFooter>

@@ -24,7 +24,7 @@ export function SecurityCard() {
 
         <Button
           variant="outline"
-          className="w-full justify-start gap-2"
+          className="h-11 w-full justify-start gap-2"
           disabled={pending}
           onClick={() => startTransition(() => lockApp())}
         >

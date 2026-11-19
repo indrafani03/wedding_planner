@@ -74,7 +74,7 @@ export function ProfileForm({
             defaultValue={profile.savingTarget}
             hint="Dipakai untuk menghitung sisa yang harus ditabung."
           />
-          <Button type="submit" disabled={pending} className="w-full">
+          <Button type="submit" disabled={pending} className="h-11 w-full">
             {pending ? "Menyimpan..." : "Simpan"}
           </Button>
         </form>

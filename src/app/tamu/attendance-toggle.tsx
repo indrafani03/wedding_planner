@@ -36,11 +36,12 @@ export function AttendanceToggle({
   const report = useActionToast();
 
   return (
-    <div className="flex gap-1">
+    <div role="group" aria-label="Kehadiran" className="grid grid-cols-3 gap-1.5">
       {choices.map((choice) => (
         <button
           key={choice.value}
           type="button"
+          aria-pressed={optimistic === choice.value}
           onClick={() => {
             startTransition(async () => {
               setOptimistic(choice.value);
@@ -50,7 +51,7 @@ export function AttendanceToggle({
             });
           }}
           className={cn(
-            "rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors",
+            "h-11 rounded-lg border text-xs font-medium transition-colors",
             optimistic === choice.value
               ? choice.active
               : "text-muted-foreground bg-background",

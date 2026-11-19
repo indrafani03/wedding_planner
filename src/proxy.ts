@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/auth";
+import { safeNextPath } from "@/lib/safe-path";
 
 const LOGIN_PATH = "/masuk";
 
@@ -22,7 +23,7 @@ export function proxy(request: NextRequest) {
 
   if (pathname === LOGIN_PATH) {
     if (!unlocked) return NextResponse.next();
-    const next = request.nextUrl.searchParams.get("next") ?? "/";
+    const next = safeNextPath(request.nextUrl.searchParams.get("next"));
     return NextResponse.redirect(new URL(next, request.url));
   }
 
@@ -36,6 +37,6 @@ export function proxy(request: NextRequest) {
 export const config = {
   /** Everything except Next internals and static assets. */
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

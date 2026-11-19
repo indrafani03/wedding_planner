@@ -37,8 +37,7 @@ export function DeleteButton({
         <Button
           type="button"
           variant="ghost"
-          size="sm"
-          className="text-destructive hover:text-destructive h-8 gap-1.5 px-2"
+          className="text-destructive hover:text-destructive h-11 gap-1.5 px-3"
         >
           <Trash2 className="size-3.5" />
           Hapus
@@ -50,8 +49,9 @@ export function DeleteButton({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-row justify-end gap-2">
-          <AlertDialogCancel className="mt-0">Batal</AlertDialogCancel>
+          <AlertDialogCancel className="mt-0 h-11 px-4">Batal</AlertDialogCancel>
           <AlertDialogAction
+            className="h-11 px-4"
             disabled={pending}
             onClick={(event) => {
               event.preventDefault();

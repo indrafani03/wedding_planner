@@ -11,7 +11,7 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
 });
 
-const toDate = (value: string | null) => (value ? new Date(`${value}T00:00:00`) : null);
+const toDate = (value: string | null) => (value ? new Date(`${value}T00:00:00+07:00`) : null);
 
 async function main() {
   // Fill the profile from the workbook, but never overwrite values the couple already set.
@@ -34,7 +34,7 @@ async function main() {
   if ((await prisma.cashflowEntry.count()) === 0) {
     await prisma.cashflowEntry.createMany({
       data: seedData.cashflow.map((entry) => ({
-        date: new Date(`${entry.date}T00:00:00`),
+        date: new Date(`${entry.date}T00:00:00+07:00`),
         description: entry.description,
         type: entry.type as "INCOME" | "EXPENSE",
         party: entry.party as "CPP" | "CPW",

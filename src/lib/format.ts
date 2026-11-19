@@ -23,16 +23,32 @@ export function formatNumber(value: number | null | undefined) {
   return new Intl.NumberFormat("id-ID").format(value ?? 0);
 }
 
+/**
+ * Every calendar date is read in WIB, whatever timezone the server runs in,
+ * so "today" and countdowns flip at midnight Jakarta time.
+ */
+export const APP_TIME_ZONE = "Asia/Jakarta";
+
 const dateLong = new Intl.DateTimeFormat("id-ID", {
+  timeZone: APP_TIME_ZONE,
   day: "numeric",
   month: "long",
   year: "numeric",
 });
 
 const dateShort = new Intl.DateTimeFormat("id-ID", {
+  timeZone: APP_TIME_ZONE,
   day: "numeric",
   month: "short",
   year: "numeric",
+});
+
+/** en-CA formats as YYYY-MM-DD, the shape <input type="date"> wants. */
+const isoDay = new Intl.DateTimeFormat("en-CA", {
+  timeZone: APP_TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
 });
 
 export function formatDate(value: Date | string | null | undefined) {
@@ -48,19 +64,25 @@ export function formatDateShort(value: Date | string | null | undefined) {
 /** Date -> "2027-08-14" for <input type="date"> */
 export function toDateInputValue(value: Date | string | null | undefined) {
   if (!value) return "";
-  const d = new Date(value);
-  const offset = d.getTimezoneOffset() * 60_000;
-  return new Date(d.getTime() - offset).toISOString().slice(0, 10);
+  return isoDay.format(new Date(value));
+}
+
+/** Today's date in WIB as "2027-08-14". */
+export function todayInputValue() {
+  return isoDay.format(new Date());
+}
+
+/** "2027-08-14" (a WIB calendar day) -> the instant it starts. */
+export function startOfDayWIB(day: string) {
+  return new Date(`${day}T00:00:00+07:00`);
 }
 
 /** Whole days from today until the given date (negative = already passed). */
 export function daysUntil(value: Date | string | null | undefined) {
   if (!value) return null;
-  const target = new Date(value);
-  const today = new Date();
-  target.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-  return Math.round((target.getTime() - today.getTime()) / 86_400_000);
+  const target = Date.parse(toDateInputValue(value));
+  const today = Date.parse(todayInputValue());
+  return Math.round((target - today) / 86_400_000);
 }
 
 export function countdownLabel(value: Date | string | null | undefined) {

@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Delete, Heart, LoaderCircle } from "lucide-react";
+import Image from "next/image";
+import { Delete, LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { unlockApp } from "./actions";
@@ -64,9 +65,13 @@ export function PinPad({
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-8 px-8 py-10">
       <div className="flex flex-col items-center gap-3 text-center">
-        <span className="bg-primary text-primary-foreground flex size-14 items-center justify-center rounded-2xl">
-          <Heart className="size-7" fill="currentColor" />
-        </span>
+        <Image
+          src="/logo.png"
+          alt="Logo Wedding PNC"
+          width={112}
+          height={112}
+          priority
+        />
         <div>
           <h1 className="text-xl font-bold">Masukkan PIN</h1>
           <p className="text-muted-foreground mt-0.5 text-sm">{coupleLabel}</p>

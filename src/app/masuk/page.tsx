@@ -1,13 +1,12 @@
 import { getProfile } from "@/lib/profile";
+import { safeNextPath } from "@/lib/safe-path";
 import { PinPad } from "./pin-pad";
 
 export const dynamic = "force-dynamic";
 
 export default async function LoginPage({ searchParams }: PageProps<"/masuk">) {
   const params = await searchParams;
-  const rawNext = typeof params.next === "string" ? params.next : "/";
-  // Only allow same-origin paths, never an absolute URL from the query string.
-  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/";
+  const next = safeNextPath(typeof params.next === "string" ? params.next : null);
 
   const profile = await getProfile();
 

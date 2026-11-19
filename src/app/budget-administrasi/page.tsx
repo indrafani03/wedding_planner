@@ -26,7 +26,17 @@ export default async function AdminBudgetPage() {
 
   const estimation = items.reduce((sum, i) => sum + i.estimationPrice * i.qty, 0);
   const real = items.reduce((sum, i) => sum + i.realPrice * i.qty, 0);
-  const offBudget = estimation - real;
+  // Only items that already have a real price can be compared; the rest
+  // would otherwise count their whole estimate as "savings".
+  const priced = items.filter((i) => i.realPrice > 0);
+  const offBudget = priced.reduce(
+    (sum, i) => sum + (i.estimationPrice - i.realPrice) * i.qty,
+    0,
+  );
+  const offBudgetHint =
+    priced.length === 0
+      ? "Belum ada harga real"
+      : `${offBudget >= 0 ? "Hemat" : "Over"} ${formatIDR(Math.abs(offBudget))} dari ${priced.length} item`;
   const done = items.filter((i) => i.status === "DONE").length;
 
   const groups = new Map<string, typeof items>();
@@ -55,8 +65,10 @@ export default async function AdminBudgetPage() {
           <StatCard
             label="Total Real"
             value={formatIDR(real)}
-            hint={`${offBudget >= 0 ? "Hemat" : "Over"} ${formatIDR(Math.abs(offBudget))}`}
-            tone={offBudget >= 0 ? "positive" : "negative"}
+            hint={offBudgetHint}
+            tone={
+              priced.length === 0 ? "default" : offBudget >= 0 ? "positive" : "negative"
+            }
           />
         </StatGrid>
 

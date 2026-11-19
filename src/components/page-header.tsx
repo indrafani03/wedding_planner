@@ -17,12 +17,12 @@ export function PageHeader({
 }) {
   return (
     <header className="bg-background/95 sticky top-0 z-30 border-b backdrop-blur">
-      <div className="flex items-center gap-2 px-3 py-3">
+      <div className="flex min-h-14 items-center gap-2 px-3 py-1.5">
         {showBack ? (
           <Link
             href={backHref}
             aria-label="Kembali"
-            className="hover:bg-accent -ml-1 flex size-8 shrink-0 items-center justify-center rounded-full"
+            className="hover:bg-accent -ml-2 flex size-11 shrink-0 items-center justify-center rounded-full"
           >
             <ChevronLeft className="size-5" />
           </Link>

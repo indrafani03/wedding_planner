@@ -25,7 +25,7 @@ export function ToggleCheck({
     <Checkbox
       checked={optimistic}
       aria-label={ariaLabel}
-      className="size-5"
+      className="size-5 after:-inset-3"
       onCheckedChange={(value) => {
         const next = value === true;
         startTransition(async () => {

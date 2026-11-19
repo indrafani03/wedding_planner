@@ -96,7 +96,7 @@ export default async function GuestsPage({
           />
         </StatGrid>
 
-        <Suspense fallback={<Skeleton className="h-32 w-full rounded-lg" />}>
+        <Suspense fallback={<Skeleton className="h-40 w-full rounded-lg" />}>
           <GuestFilters />
         </Suspense>
 
@@ -153,8 +153,10 @@ export default async function GuestsPage({
                   </div>
                 </div>
 
-                <div className="mt-2 flex items-center justify-between gap-2">
+                <div className="mt-3">
                   <AttendanceToggle id={guest.id} attendance={guest.attendance} />
+                </div>
+                <div className="mt-1 flex items-center justify-end">
                   <div className="flex gap-1">
                     <GuestSheet
                       guest={{

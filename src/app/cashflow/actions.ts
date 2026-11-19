@@ -18,12 +18,15 @@ function parse(formData: FormData) {
   const entryDate = date(formData, "date");
   if (!entryDate) throw new Error("Tanggal wajib diisi");
 
+  const amount = money(formData, "amount");
+  if (amount <= 0) throw new Error("Nominal wajib diisi dan lebih dari 0");
+
   return {
     date: entryDate,
     description: requiredString(formData, "description", "Keterangan"),
     type: enumValue(formData, "type", TYPES, "INCOME"),
     party: enumValue(formData, "party", PARTIES, "CPP"),
-    amount: money(formData, "amount"),
+    amount,
     note: optionalString(formData, "note"),
   };
 }

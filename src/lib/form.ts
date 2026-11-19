@@ -1,3 +1,5 @@
+import { startOfDayWIB } from "@/lib/format";
+
 /** Helpers to read values out of a FormData inside server actions. */
 
 export function optionalString(formData: FormData, key: string) {
@@ -38,7 +40,8 @@ export function boolean(formData: FormData, key: string) {
 export function date(formData: FormData, key: string) {
   const value = optionalString(formData, key);
   if (!value) return null;
-  const parsed = new Date(`${value}T00:00:00`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const parsed = startOfDayWIB(value);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
