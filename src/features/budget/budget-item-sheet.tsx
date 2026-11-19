@@ -2,6 +2,8 @@
 
 import { Pencil, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatIDR } from "@/lib/format";
+import { SummaryBox, useLiveNumbers } from "@/components/form/live-summary";
 import { FormSheet } from "@/components/form/form-sheet";
 import {
   ComboField,
@@ -93,20 +95,15 @@ export function BudgetItemSheet({
         defaultValue={item?.vendor}
         placeholder="Nama vendor / toko"
       />
-      <MoneyField
-        name="totalCost"
-        label="Total Biaya"
-        defaultValue={item?.totalCost}
-      />
-
       {showTerms ? (
-        <div className="grid grid-cols-2 gap-3">
-          <MoneyField name="term1" label="Termin 1" defaultValue={item?.term1} />
-          <MoneyField name="term2" label="Termin 2" defaultValue={item?.term2} />
-          <MoneyField name="term3" label="Termin 3" defaultValue={item?.term3} />
-          <MoneyField name="term4" label="Termin 4" defaultValue={item?.term4} />
-        </div>
-      ) : null}
+        <PaymentFields item={item} />
+      ) : (
+        <MoneyField
+          name="totalCost"
+          label="Total Biaya"
+          defaultValue={item?.totalCost}
+        />
+      )}
 
       <TextAreaField
         name="note"
@@ -115,5 +112,50 @@ export function BudgetItemSheet({
         placeholder="estimasi, sudah lunas, sponsor nenek..."
       />
     </FormSheet>
+  );
+}
+
+/** Total cost + 4 terms, with a live "paid / remaining" box underneath. */
+function PaymentFields({ item }: { item?: BudgetItemInput }) {
+  const [values, onInput] = useLiveNumbers({
+    totalCost: item?.totalCost ?? 0,
+    term1: item?.term1 ?? 0,
+    term2: item?.term2 ?? 0,
+    term3: item?.term3 ?? 0,
+    term4: item?.term4 ?? 0,
+  });
+
+  const paid = values.term1 + values.term2 + values.term3 + values.term4;
+  const remaining = values.totalCost - paid;
+  const overpaid = remaining < 0;
+  const settled = values.totalCost > 0 && remaining === 0;
+
+  return (
+    <div onInput={onInput} className="flex flex-col gap-4">
+      <MoneyField
+        name="totalCost"
+        label="Total Biaya"
+        defaultValue={item?.totalCost}
+      />
+      <div className="grid grid-cols-2 gap-3">
+        <MoneyField name="term1" label="Termin 1" defaultValue={item?.term1} />
+        <MoneyField name="term2" label="Termin 2" defaultValue={item?.term2} />
+        <MoneyField name="term3" label="Termin 3" defaultValue={item?.term3} />
+        <MoneyField name="term4" label="Termin 4" defaultValue={item?.term4} />
+      </div>
+      <SummaryBox
+        tone={overpaid ? "bad" : settled ? "good" : "neutral"}
+        left={{ label: "Sudah dibayar", value: formatIDR(paid) }}
+        right={{
+          label: overpaid ? "Lebih bayar" : "Sisa pembayaran",
+          value: settled ? "Lunas" : formatIDR(Math.abs(remaining)),
+        }}
+        note={
+          overpaid
+            ? "Jumlah termin melebihi Total Biaya. Cek lagi nominalnya."
+            : undefined
+        }
+      />
+    </div>
   );
 }

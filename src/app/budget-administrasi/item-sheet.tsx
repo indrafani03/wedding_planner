@@ -11,6 +11,12 @@ import {
   TextAreaField,
   TextField,
 } from "@/components/form/fields";
+import {
+  planVsActual,
+  SummaryBox,
+  useLiveNumbers,
+} from "@/components/form/live-summary";
+import { formatIDR } from "@/lib/format";
 import { todoStatusOptions } from "@/lib/labels";
 import type { TodoStatus } from "@/generated/prisma/enums";
 import { createAdminBudgetItem, updateAdminBudgetItem } from "./actions";
@@ -82,6 +88,29 @@ export function AdminBudgetItemSheet({
         defaultValue={item?.category ?? ADMIN_CATEGORIES[0]}
         required
       />
+      <PriceFields item={item} />
+      <SelectField
+        name="status"
+        label="Status"
+        options={todoStatusOptions}
+        defaultValue={item?.status ?? "NOT_YET"}
+      />
+      <TextAreaField name="note" label="Keterangan" defaultValue={item?.note} />
+    </FormSheet>
+  );
+}
+
+/** Qty + estimate + real price, with a live "hemat / over" box underneath. */
+function PriceFields({ item }: { item?: AdminBudgetItemInput }) {
+  const [values, onInput] = useLiveNumbers({
+    qty: item?.qty ?? 1,
+    estimationPrice: item?.estimationPrice ?? 0,
+    realPrice: item?.realPrice ?? 0,
+  });
+  const result = planVsActual(values.estimationPrice, values.realPrice, values.qty);
+
+  return (
+    <div onInput={onInput} className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3">
         <TextField
           name="handledBy"
@@ -93,21 +122,27 @@ export function AdminBudgetItemSheet({
       </div>
       <MoneyField
         name="estimationPrice"
-        label="Estimasi Harga"
+        label="Estimasi Harga (per item)"
         defaultValue={item?.estimationPrice}
       />
       <MoneyField
         name="realPrice"
-        label="Harga Real"
+        label="Harga Real (per item)"
         defaultValue={item?.realPrice}
       />
-      <SelectField
-        name="status"
-        label="Status"
-        options={todoStatusOptions}
-        defaultValue={item?.status ?? "NOT_YET"}
+      <SummaryBox
+        tone={result.tone}
+        left={{ label: `Total estimasi ×${values.qty}`, value: formatIDR(result.planTotal) }}
+        right={{
+          label: result.label,
+          value: typeof result.text === "number" ? formatIDR(result.text) : result.text,
+        }}
+        note={
+          values.realPrice > 0
+            ? `Total real ${formatIDR(result.actualTotal)}`
+            : undefined
+        }
       />
-      <TextAreaField name="note" label="Keterangan" defaultValue={item?.note} />
-    </FormSheet>
+    </div>
   );
 }

@@ -9,6 +9,12 @@ import {
   NumberField,
   TextField,
 } from "@/components/form/fields";
+import {
+  planVsActual,
+  SummaryBox,
+  useLiveNumbers,
+} from "@/components/form/live-summary";
+import { formatIDR } from "@/lib/format";
 import { createSeserahanItem, updateSeserahanItem } from "./actions";
 
 export const SESERAHAN_CATEGORIES = [
@@ -75,6 +81,29 @@ export function SeserahanItemSheet({ item }: { item?: SeserahanItemInput }) {
         defaultValue={item?.category ?? SESERAHAN_CATEGORIES[0]}
         required
       />
+      <PriceFields item={item} />
+      <TextField
+        name="link"
+        label="Link Produk"
+        type="url"
+        defaultValue={item?.link}
+        placeholder="https://..."
+      />
+    </FormSheet>
+  );
+}
+
+/** Qty + budget + bought price, with a live "hemat / over" box underneath. */
+function PriceFields({ item }: { item?: SeserahanItemInput }) {
+  const [values, onInput] = useLiveNumbers({
+    qty: item?.qty ?? 1,
+    budget: item?.budget ?? 0,
+    actualPrice: item?.actualPrice ?? 0,
+  });
+  const result = planVsActual(values.budget, values.actualPrice, values.qty);
+
+  return (
+    <div onInput={onInput} className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3">
         <TextField
           name="brand"
@@ -84,19 +113,25 @@ export function SeserahanItemSheet({ item }: { item?: SeserahanItemInput }) {
         />
         <NumberField name="qty" label="Qty" defaultValue={item?.qty ?? 1} min={1} />
       </div>
-      <MoneyField name="budget" label="Budget" defaultValue={item?.budget} />
+      <MoneyField name="budget" label="Budget (per item)" defaultValue={item?.budget} />
       <MoneyField
         name="actualPrice"
-        label="Harga Sebenarnya"
+        label="Harga Sebenarnya (per item)"
         defaultValue={item?.actualPrice}
       />
-      <TextField
-        name="link"
-        label="Link Produk"
-        type="url"
-        defaultValue={item?.link}
-        placeholder="https://..."
+      <SummaryBox
+        tone={result.tone}
+        left={{ label: `Total budget ×${values.qty}`, value: formatIDR(result.planTotal) }}
+        right={{
+          label: result.label,
+          value: typeof result.text === "number" ? formatIDR(result.text) : result.text,
+        }}
+        note={
+          values.actualPrice > 0
+            ? `Total harga sebenarnya ${formatIDR(result.actualTotal)}`
+            : undefined
+        }
       />
-    </FormSheet>
+    </div>
   );
 }

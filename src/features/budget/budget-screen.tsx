@@ -135,6 +135,25 @@ export async function BudgetScreen({ config }: { config: BudgetScreenConfig }) {
                             Dibayar {formatIDR(itemPaid)}
                           </Badge>
                         ) : null}
+                        {config.showTerms && itemPaid > 0 && item.totalCost > 0 ? (
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "h-5 px-2 text-[10px] tabular-nums",
+                              itemPaid > item.totalCost
+                                ? "border-rose-200 text-rose-700"
+                                : itemPaid === item.totalCost
+                                  ? "border-emerald-200 text-emerald-700"
+                                  : "",
+                            )}
+                          >
+                            {itemPaid > item.totalCost
+                              ? `Lebih bayar ${formatIDR(itemPaid - item.totalCost)}`
+                              : itemPaid === item.totalCost
+                                ? "Lunas"
+                                : `Sisa ${formatIDR(item.totalCost - itemPaid)}`}
+                          </Badge>
+                        ) : null}
                         {item.note ? (
                           <span className="text-muted-foreground text-[11px]">
                             {item.note}

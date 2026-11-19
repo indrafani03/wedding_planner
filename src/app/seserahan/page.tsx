@@ -1,5 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
+import { PlanDiff } from "@/components/plan-diff";
 import { EmptyState } from "@/components/empty-state";
 import { ProgressCard, SectionTitle, StatCard, StatGrid } from "@/components/stat";
 import { DeleteButton } from "@/components/form/delete-button";
@@ -130,6 +131,7 @@ export default async function SeserahanPage() {
                           {formatIDR(item.budget)}
                         </p>
                       ) : null}
+                      <PlanDiff plan={item.budget} actual={item.actualPrice} qty={item.qty} />
                     </div>
                   </div>
 

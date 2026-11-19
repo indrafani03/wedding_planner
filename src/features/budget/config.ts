@@ -7,7 +7,7 @@ export type BudgetScreenConfig = {
   subtitle: string;
   /** Category suggestions, taken from the original spreadsheet. */
   categories: string[];
-  /** Wedding budget tracks payments in 4 terms; the others do not. */
+  /** Show the 4 payment terms and the paid / remaining summary. */
   showTerms: boolean;
 };
 
@@ -24,7 +24,7 @@ export const budgetConfigs: Record<BudgetScope, BudgetScreenConfig> = {
       "OUTFIT CPW",
       "AKOMODASI",
     ],
-    showTerms: false,
+    showTerms: true,
   },
   WEDDING: {
     scope: "WEDDING",

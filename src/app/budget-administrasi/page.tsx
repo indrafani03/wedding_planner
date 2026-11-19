@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/page-header";
+import { PlanDiff } from "@/components/plan-diff";
 import { EmptyState } from "@/components/empty-state";
 import { ProgressCard, SectionTitle, StatCard, StatGrid } from "@/components/stat";
 import { DeleteButton } from "@/components/form/delete-button";
@@ -125,6 +126,7 @@ export default async function AdminBudgetPage() {
                           {formatIDR(item.estimationPrice)}
                         </p>
                       ) : null}
+                      <PlanDiff plan={item.estimationPrice} actual={item.realPrice} qty={item.qty} />
                     </div>
                   </div>
 
